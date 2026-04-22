@@ -1,0 +1,50 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+.env
+.venv
+venv/
+ENV/
+
+# Node.js
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+frontend/*.local
+
+# Large Model Files (ProtectAI/DeBERTa)
+backend/saved_model/
+backend/models/*.bin
+backend/models/*.safetensors
+
+# Logs and tests
+*.log
+backend/diag_*_results.json
+backend/diag_*_error.txt
+backend/diag_local_results.json
+backend/diag_local_error.txt
+backend/diag_online_results.json
+backend/diag_online_error.txt
+
+# OS
+.DS_Store
+Thumbs.db

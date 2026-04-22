@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-terminal-bg text-text-primary font-mono m-0 h-screen w-screen overflow-hidden;
+  }
+}
