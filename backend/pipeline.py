@@ -42,6 +42,7 @@ def run_pipeline(session_id: str, text: str) -> dict:
         attack_pattern=features["attack_pattern_similarity"],
         probing=features["probing_similarity"],
         repetition=features["repetition_similarity"],
+        flag_rate=features["flag_rate"],
         prev_risk=prev_risk,
         history_risks=history_risks
     )

@@ -22,9 +22,29 @@ def probing_similarity(embedding: np.ndarray) -> float:
 
 def role_shift_counter(text: str) -> float:
     patterns = [
-        "you are now", "act as", "pretend you are", "ignore previous",
-        "ignore all", "forget your", "new persona", "your new role", "disregard"
-    ]
+    # existing
+    "you are now", "act as", "pretend you are", "ignore previous",
+    "ignore all", "forget your", "new persona", "your new role", "disregard",
+    "unrestricted", "dev mode", "dev environment", "testing purposes",
+    "output your system", "no restrictions", "bypass", "override",
+    "ignore those", "ignore these", "jailbreak", "without restrictions",
+    "confirm you're now", "confirm you are now",
+    # ADD — roleplay jailbreak patterns
+    "as that character",
+    "respond as",
+    "now as",
+    "stay in character",
+    "in character",
+    "playing the role",
+    "from now on you are",
+    "from now on act",
+    "zero restrictions",
+    "no content policy",
+    "content filter",
+    "content filters",
+    "as the character",
+    "that character would",
+]
     count = 0
     lower_text = text.lower()
     for p in patterns:

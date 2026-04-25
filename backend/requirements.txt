@@ -6,4 +6,5 @@ sentence-transformers
 pydantic
 numpy
 redis
+fakeredis
 accelerate

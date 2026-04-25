@@ -12,15 +12,14 @@ def _load_llm():
     global pipe
     logger.info(f"Loading LLM pipeline: {LLM_MODEL_ID}")
     try:
-        # Use simple initializers to avoid external dependency issues (like accelerate)
         pipe = pipeline(
             "text-generation",
             model=LLM_MODEL_ID,
-            device=-1 # Forced CPU
+            device=-1  # Forced CPU
         )
         logger.info("LLM pipeline loaded successfully!")
     except Exception as e:
-        print("ERROR LOADING MODEL:", e)   # 🔥 debug
+        print("ERROR LOADING MODEL:", e)
         logger.error(f"Failed to load LLM {LLM_MODEL_ID}: {e}")
     finally:
         _load_event.set()
@@ -28,8 +27,21 @@ def _load_llm():
 # Load in background
 threading.Thread(target=_load_llm, daemon=True).start()
 
+# TinyLlama uses ChatML format — this is the correct prompt template
+SYSTEM_PROMPT = (
+    "You are a concise assistant. "
+    "Reply in 1-2 short sentences only. "
+    "Do not explain, do not use bullet points, do not elaborate."
+)
+
+def _build_chatml_prompt(user_message: str) -> str:
+    return (
+        f"<|system|>\n{SYSTEM_PROMPT}</s>\n"
+        f"<|user|>\n{user_message}</s>\n"
+        f"<|assistant|>\n"
+    )
+
 def generate_response(prompt: str) -> str:
-    # Wait until model is ready
     if not _load_event.is_set():
         logger.warning("LLM still loading... waiting")
         _load_event.wait()
@@ -37,20 +49,20 @@ def generate_response(prompt: str) -> str:
     if pipe is None:
         return "LLM failed to load."
 
-    # Use a clear separator for the completion model
-    safe_prompt = f"User: {prompt}\nAssistant:"
+    chatml_prompt = _build_chatml_prompt(prompt)
 
     output = pipe(
-        safe_prompt,
-        max_new_tokens=100,
-        do_sample=True,
-        temperature=0.7,
-        return_full_text=False # Crucial: prevents prompt from appearing in the output
+        chatml_prompt,
+        max_new_tokens=60,             # Hard cap — forces short replies
+        do_sample=False,               # Greedy decoding: faster, no sampling overhead
+        repetition_penalty=1.1,
+        return_full_text=False
     )
 
-    raw_response = output[0]["generated_text"].strip()
-    
-    # Prune hallucinated turns (User/Assistant loops)
-    clean_response = raw_response.split("User:")[0].split("Assistant:")[0].strip()
-    
-    return clean_response if clean_response else "..."
+    raw = output[0]["generated_text"].strip()
+
+    # Strip any leaked ChatML tokens if model repeats them
+    for stop_token in ["</s>", "<|user|>", "<|system|>", "<|assistant|>"]:
+        raw = raw.split(stop_token)[0].strip()
+
+    return raw if raw else "I'm not sure how to respond to that."
