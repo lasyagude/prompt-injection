@@ -1,0 +1,50 @@
+{
+  "Sentinel (Hand-Tuned Baseline 55/45)": {
+    "AUC": 0.949783950617284,
+    "F1": 0.8959537572254336,
+    "Precision": 0.9337349397590361,
+    "Recall": 0.8611111111111112,
+    "FPR": 0.12222222222222222,
+    "Escalation_Recall": 0.8222222222222222
+  },
+  "Sentinel (Retuned 25/75)": {
+    "AUC": 0.948179012345679,
+    "F1": 0.8959537572254336,
+    "Precision": 0.9337349397590361,
+    "Recall": 0.8611111111111112,
+    "FPR": 0.12222222222222222,
+    "Escalation_Recall": 0.8222222222222222
+  },
+  "Sentinel (Baseline + Nonlinear Gate)": {
+    "AUC": 0.9497839506172839,
+    "F1": 0.9209039548022598,
+    "Precision": 0.9367816091954023,
+    "Recall": 0.9055555555555556,
+    "FPR": 0.12222222222222222,
+    "Escalation_Recall": 1.0
+  },
+  "Sentinel (Logistic Regression)": {
+    "AUC": 0.9696296296296296,
+    "F1": 0.923943661971831,
+    "Precision": 0.9371428571428572,
+    "Recall": 0.9111111111111111,
+    "FPR": 0.12222222222222222,
+    "Escalation_Recall": 1.0
+  },
+  "DeBERTa Only": {
+    "AUC": 0.9387037037037037,
+    "F1": 0.8959537572254336,
+    "Precision": 0.9337349397590361,
+    "Recall": 0.8611111111111112,
+    "FPR": 0.12222222222222222,
+    "Escalation_Recall": 0.8222222222222222
+  },
+  "Behavioral Features Only": {
+    "AUC": 0.8489506172839506,
+    "F1": 0.0,
+    "Precision": 0.0,
+    "Recall": 0.0,
+    "FPR": 0.0,
+    "Escalation_Recall": 0.0
+  }
+}

@@ -5,27 +5,50 @@ import numpy as np
 from typing import List, Dict, Any
 from config import REDIS_HOST, REDIS_PORT, REDIS_DB, SESSION_TTL_SECONDS
 
+# Use fakeredis for local development/memory-only if REDIS_HOST is default
 r = fakeredis.FakeRedis(decode_responses=True)
 
-def get_history(session_id: str) -> List[Dict[str, Any]]:
+def get_history(session_id: str, include_embeddings: bool = False) -> List[Dict[str, Any]]:
+    """
+    Fetches session history. 
+    By default, excludes large embeddings for performance (hot path).
+    """
     key = f"session:{session_id}:turns"
-    turns = r.lrange(key, 0, -1)
+    turns_raw = r.lrange(key, 0, -1)
     history = []
-    for turn_str in turns:
+    
+    for idx, turn_str in enumerate(turns_raw):
         turn = json.loads(turn_str)
-        if "embedding" in turn:
-            turn["embedding"] = np.array(turn["embedding"])
+        if include_embeddings:
+            emb_key = f"session:{session_id}:emb:{idx}"
+            emb_raw = r.get(emb_key)
+            if emb_raw:
+                turn["embedding"] = np.array(json.loads(emb_raw))
         history.append(turn)
     return history
 
 def add_turn(session_id: str, turn_dict: Dict[str, Any]):
+    """
+    Saves a turn. Metadata (text, scores) goes to the main list.
+    Heavy embeddings are offloaded to separate keys.
+    """
     key = f"session:{session_id}:turns"
-    to_store = turn_dict.copy()
-    if "embedding" in to_store and isinstance(to_store["embedding"], np.ndarray):
-        to_store["embedding"] = to_store["embedding"].tolist()
+    turn_idx = r.llen(key)
     
+    to_store = turn_dict.copy()
+    embedding = to_store.pop("embedding", None)
+    
+    # Store Lite metadata
     r.rpush(key, json.dumps(to_store))
     r.expire(key, SESSION_TTL_SECONDS)
+    
+    # Store Heavy embedding separately
+    if embedding is not None:
+        emb_key = f"session:{session_id}:emb:{turn_idx}"
+        if isinstance(embedding, np.ndarray):
+            embedding = embedding.tolist()
+        r.set(emb_key, json.dumps(embedding))
+        r.expire(emb_key, SESSION_TTL_SECONDS)
 
 def get_prev_risk(session_id: str) -> float:
     key = f"session:{session_id}:prev_risk"
@@ -55,11 +78,8 @@ def get_stats(session_id: str) -> Dict[str, Any]:
     stats = r.hgetall(key)
     if not stats:
         return {
-            "total_turns": 0,
-            "flagged": 0,
-            "blocked": 0,
-            "avg_risk": 0.0,
-            "avg_latency_ms": 0.0
+            "total_turns": 0, "flagged": 0, "blocked": 0,
+            "avg_risk": 0.0, "avg_latency_ms": 0.0
         }
     
     total_turns = int(stats.get("total_turns", 0))
@@ -83,3 +103,6 @@ def clear_session(session_id: str):
     r.delete(f"session:{session_id}:turns")
     r.delete(f"session:{session_id}:prev_risk")
     r.delete(f"session:{session_id}:stats")
+    # Clean up embeddings (up to a reasonable count)
+    for i in range(100):
+        r.delete(f"session:{session_id}:emb:{i}")

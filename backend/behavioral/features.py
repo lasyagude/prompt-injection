@@ -52,20 +52,54 @@ def role_shift_counter(text: str) -> float:
     return min(count / 3.0, 1.0)
 
 def conversation_trajectory(current_embedding: np.ndarray, history: List[Dict[str, Any]]) -> float:
+    """
+    Measures how much the current message diverges from the conversation's recent direction.
+    Uses a rolling mean of the last 5 turns' embeddings (L2-normalized) for a stable,
+    noise-resistant topic-shift signal. High value = sudden topic pivot (suspicious).
+    """
     if not history:
         return 0.0
-    sim = cosine_similarity(current_embedding, np.array(history[-1]["embedding"]))
-    return 1.0 - sim
+    recent = history[-5:]
+    stacked = np.array([np.array(t["embedding"]) for t in recent])
+    avg_emb = np.mean(stacked, axis=0)
+    norm = np.linalg.norm(avg_emb)
+    if norm == 0:
+        return 0.0
+    avg_emb = avg_emb / norm
+    sim = cosine_similarity(current_embedding, avg_emb)
+    return round(1.0 - sim, 4)
+
 
 def repetition_similarity(current_embedding: np.ndarray, history: List[Dict[str, Any]]) -> float:
-    if len(history) < 2:
+    """
+    Detects if the current message is semantically similar to a previously suspicious turn.
+    Only compares against turns where deberta_score > 0.35 (WARN threshold).
+    This targets re-worded injection attempts, not normal conversational repetition.
+    """
+    risky_turns = [t for t in history if t.get("deberta_score", 0.0) > 0.35]
+    if not risky_turns:
         return 0.0
-    recent_history = history[-3:]
-    similarities = [cosine_similarity(current_embedding, np.array(turn["embedding"])) for turn in recent_history]
-    return max(similarities) if similarities else 0.0
+    recent_risky = risky_turns[-3:]
+    similarities = [cosine_similarity(current_embedding, np.array(t["embedding"])) for t in recent_risky]
+    return round(max(similarities), 4) if similarities else 0.0
+
 
 def flag_rate(history: List[Dict[str, Any]]) -> float:
     if not history:
         return 0.0
-    flagged = sum(1 for turn in history if turn.get("deberta_score", 0.0) > 0.5)
+    flagged = sum(1 for turn in history if turn.get("deberta_score", 0.0) > 0.35)
     return flagged / len(history)
+
+def escalation_rate(history_risks: List[float]) -> float:
+    """
+    Measures the rate of monotonic increase in risk scores across the last 5 turns.
+    Value of 1.0 means every consecutive pair showed rising risk (active escalation).
+    Value of 0.0 means no escalation detected.
+    Targets multi-turn gradual injection attacks that individually stay below threshold.
+    """
+    window = history_risks[-5:]
+    if len(window) < 2:
+        return 0.0
+    increases = sum(1 for i in range(1, len(window)) if window[i] > window[i - 1])
+    return round(increases / (len(window) - 1), 4)
+

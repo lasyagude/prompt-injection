@@ -1,0 +1,11 @@
+{
+  "total_examples": 270,
+  "source_breakdown": {
+    "PromptBench": 68,
+    "synthetic": 22,
+    "HackAPrompt": 64,
+    "BIPIA": 26,
+    "synthetic_borderline": 45,
+    "synthetic_unique": 45
+  }
+}

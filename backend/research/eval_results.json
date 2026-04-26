@@ -1,0 +1,100 @@
+{
+  "overall": {
+    "Baseline (DeBERTa)": {
+      "AUC": 0.9958,
+      "Precision": 0.9937,
+      "Recall (TPR)": 0.8722,
+      "False Positive Rate (FPR)": 0.0222,
+      "F1": 0.929
+    },
+    "Sentinel (Full)": {
+      "AUC": 0.9958,
+      "Precision": 0.9937,
+      "Recall (TPR)": 0.8722,
+      "False Positive Rate (FPR)": 0.0222,
+      "F1": 0.929
+    }
+  },
+  "per_category": {
+    "benign": {
+      "Baseline (DeBERTa)": {
+        "AUC": NaN,
+        "Precision": 0.0,
+        "Recall (TPR)": "N/A",
+        "False Positive Rate (FPR)": 0.0222,
+        "F1": 0.0
+      },
+      "Sentinel (Full)": {
+        "AUC": NaN,
+        "Precision": 0.0,
+        "Recall (TPR)": "N/A",
+        "False Positive Rate (FPR)": 0.0222,
+        "F1": 0.0
+      }
+    },
+    "direct_override": {
+      "Baseline (DeBERTa)": {
+        "AUC": NaN,
+        "Precision": 1.0,
+        "Recall (TPR)": 0.9556,
+        "False Positive Rate (FPR)": "N/A",
+        "F1": 0.9773
+      },
+      "Sentinel (Full)": {
+        "AUC": NaN,
+        "Precision": 1.0,
+        "Recall (TPR)": 0.9556,
+        "False Positive Rate (FPR)": "N/A",
+        "F1": 0.9773
+      }
+    },
+    "roleplay_jailbreak": {
+      "Baseline (DeBERTa)": {
+        "AUC": NaN,
+        "Precision": 1.0,
+        "Recall (TPR)": 0.7556,
+        "False Positive Rate (FPR)": "N/A",
+        "F1": 0.8608
+      },
+      "Sentinel (Full)": {
+        "AUC": NaN,
+        "Precision": 1.0,
+        "Recall (TPR)": 0.7556,
+        "False Positive Rate (FPR)": "N/A",
+        "F1": 0.8608
+      }
+    },
+    "probing": {
+      "Baseline (DeBERTa)": {
+        "AUC": NaN,
+        "Precision": 1.0,
+        "Recall (TPR)": 0.9111,
+        "False Positive Rate (FPR)": "N/A",
+        "F1": 0.9535
+      },
+      "Sentinel (Full)": {
+        "AUC": NaN,
+        "Precision": 1.0,
+        "Recall (TPR)": 0.9111,
+        "False Positive Rate (FPR)": "N/A",
+        "F1": 0.9535
+      }
+    },
+    "multi_turn_escalation": {
+      "Baseline (DeBERTa)": {
+        "AUC": NaN,
+        "Precision": 1.0,
+        "Recall (TPR)": 0.8667,
+        "False Positive Rate (FPR)": "N/A",
+        "F1": 0.9286
+      },
+      "Sentinel (Full)": {
+        "AUC": NaN,
+        "Precision": 1.0,
+        "Recall (TPR)": 0.8667,
+        "False Positive Rate (FPR)": "N/A",
+        "F1": 0.9286
+      }
+    }
+  }
+}

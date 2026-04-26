@@ -1,3 +1,6 @@
+import os
+import hashlib
+import numpy as np
 from models.minilm_model import get_embedding
 
 PATTERNS = {
@@ -25,7 +28,35 @@ ALL_PATTERNS = {
     **ROLEPLAY_JAILBREAK_PATTERNS
 }
 
-ATTACK_EMBEDDINGS = {
-    name: get_embedding(text)
-    for name, text in ALL_PATTERNS.items()
-}
+# --- Disk cache for embeddings ---
+_CACHE_DIR = os.path.join(os.path.dirname(__file__), "research")
+_CACHE_PATH = os.path.join(_CACHE_DIR, "cached_attack_embeddings.npy")
+_HASH_PATH  = os.path.join(_CACHE_DIR, "cached_attack_embeddings.hash")
+
+def _patterns_hash() -> str:
+    """SHA256 of all pattern texts — detects if patterns have changed."""
+    combined = "||".join(f"{k}:{v}" for k, v in sorted(ALL_PATTERNS.items()))
+    return hashlib.sha256(combined.encode()).hexdigest()
+
+def _load_or_compute_embeddings() -> dict:
+    os.makedirs(_CACHE_DIR, exist_ok=True)
+    current_hash = _patterns_hash()
+
+    # Load from cache if it exists and hash matches
+    if os.path.exists(_CACHE_PATH) and os.path.exists(_HASH_PATH):
+        with open(_HASH_PATH, "r") as f:
+            saved_hash = f.read().strip()
+        if saved_hash == current_hash:
+            data = np.load(_CACHE_PATH, allow_pickle=True).item()
+            return data
+
+    # Compute fresh embeddings (MiniLM blocks here until model is ready)
+    print("[attack_patterns] Computing attack embeddings and saving to cache...")
+    data = {name: get_embedding(text) for name, text in ALL_PATTERNS.items()}
+    np.save(_CACHE_PATH, data)
+    with open(_HASH_PATH, "w") as f:
+        f.write(current_hash)
+    print(f"[attack_patterns] Cached {len(data)} embeddings -> {_CACHE_PATH}")
+    return data
+
+ATTACK_EMBEDDINGS = _load_or_compute_embeddings()

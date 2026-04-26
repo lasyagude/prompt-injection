@@ -1,0 +1,41 @@
+{
+  "thresholds": {
+    "WARN": 0.35,
+    "BLOCK": 0.65
+  },
+  "nonlinear_gate": {
+    "escalation_threshold": 0.8,
+    "topic_shift_threshold": 0.7,
+    "override_risk": 0.75
+  },
+  "logistic_regression": {
+    "coefficients": {
+      "deberta_score": 3.123313758877264,
+      "role_shift_counter": -0.3719219060069988,
+      "conversation_trajectory": 1.5867698627415792,
+      "attack_pattern_similarity": 1.7302562340557013,
+      "probing_similarity": 2.922733100286276,
+      "repetition_similarity": 0.0,
+      "flag_rate": 0.0,
+      "escalation_rate": 1.8184989841034576,
+      "prev_risk": 0.13161394530411236,
+      "Intercept": -3.3166385576573956
+    },
+    "feature_order": [
+      "deberta_score",
+      "role_shift_counter",
+      "conversation_trajectory",
+      "attack_pattern_similarity",
+      "probing_similarity",
+      "repetition_similarity",
+      "flag_rate",
+      "escalation_rate",
+      "prev_risk"
+    ]
+  },
+  "fusion_weights": {
+    "deberta": 0.55,
+    "behavioral": 0.45,
+    "history_dampener": 0.2
+  }
+}

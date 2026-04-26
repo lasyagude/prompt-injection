@@ -1,5 +1,6 @@
 import logging
 import threading
+import torch
 from transformers import pipeline
 from config import LLM_MODEL_ID
 
@@ -15,7 +16,8 @@ def _load_llm():
         pipe = pipeline(
             "text-generation",
             model=LLM_MODEL_ID,
-            device=-1  # Forced CPU
+            device=-1,  # Forced CPU
+            torch_dtype=torch.float32
         )
         logger.info("LLM pipeline loaded successfully!")
     except Exception as e:

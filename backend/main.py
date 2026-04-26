@@ -2,7 +2,7 @@ import asyncio
 from concurrent.futures import ThreadPoolExecutor
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 import logging
 
 from pipeline import run_pipeline
@@ -31,7 +31,7 @@ executor = ThreadPoolExecutor(max_workers=4)
 
 class ChatRequest(BaseModel):
     session_id: str
-    message: str
+    message: str = Field(..., max_length=2000)
 
 @app.on_event("startup")
 async def startup_event():

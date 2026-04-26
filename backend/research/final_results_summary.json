@@ -1,0 +1,138 @@
+{
+  "four_model_comparison": {
+    "Sentinel (Hand-Tuned Baseline)": {
+      "F1": 0.8959537572254336,
+      "Precision": 0.9337349397590361,
+      "Recall": 0.8611111111111112,
+      "FPR": 0.12222222222222222,
+      "Esc_Recall": 0.8222222222222222
+    },
+    "Sentinel (Baseline + Nonlinear Gate)": {
+      "F1": 0.9209039548022598,
+      "Precision": 0.9367816091954023,
+      "Recall": 0.9055555555555556,
+      "FPR": 0.12222222222222222,
+      "Esc_Recall": 1.0
+    },
+    "Sentinel (Logistic Regression)": {
+      "F1": 0.923943661971831,
+      "Precision": 0.9371428571428572,
+      "Recall": 0.9111111111111111,
+      "FPR": 0.12222222222222222,
+      "Esc_Recall": 1.0
+    },
+    "DeBERTa Only": {
+      "F1": 0.8959537572254336,
+      "Precision": 0.9337349397590361,
+      "Recall": 0.8611111111111112,
+      "FPR": 0.12222222222222222,
+      "Esc_Recall": 0.8222222222222222
+    }
+  },
+  "behavioral_thresholds": {
+    "0.65": {
+      "Precision": 0.0,
+      "Recall": 0.0,
+      "F1": 0.0,
+      "FPR": 0.0
+    },
+    "0.35": {
+      "Precision": 1.0,
+      "Recall": 0.10555555555555556,
+      "F1": 0.19095477386934673,
+      "FPR": 0.0
+    },
+    "0.2": {
+      "Precision": 0.95,
+      "Recall": 0.31666666666666665,
+      "F1": 0.475,
+      "FPR": 0.03333333333333333
+    },
+    "0.1": {
+      "Precision": 0.8404907975460123,
+      "Recall": 0.7611111111111111,
+      "F1": 0.7988338192419825,
+      "FPR": 0.28888888888888886
+    },
+    "0.05": {
+      "Precision": 0.7911111111111111,
+      "Recall": 0.9888888888888889,
+      "F1": 0.8790123456790123,
+      "FPR": 0.5222222222222223
+    }
+  },
+  "logistic_regression_coefficients": {
+    "deberta_score": 3.123313758877264,
+    "role_shift_counter": -0.3719219060069988,
+    "conversation_trajectory": 1.5867698627415792,
+    "attack_pattern_similarity": 1.7302562340557013,
+    "probing_similarity": 2.922733100286276,
+    "repetition_similarity": 0.0,
+    "flag_rate": 0.0,
+    "escalation_rate": 1.8184989841034576,
+    "prev_risk": 0.13161394530411236,
+    "Intercept": -3.3166385576573956
+  },
+  "nonlinear_gate_5fold_cv": {
+    "F1": "0.9201  0.0340",
+    "Precision": "0.9374  0.0247",
+    "Recall": "0.9056  0.0598",
+    "Esc_Recall": "1.0000  0.0000"
+  },
+  "threshold_sensitivity_grid": [
+    {
+      "Esc_Th": 0.7,
+      "Top_Th": 0.6,
+      "F1": 0.9209039548022598,
+      "Esc_Recall": 1.0
+    },
+    {
+      "Esc_Th": 0.7,
+      "Top_Th": 0.7,
+      "F1": 0.9209039548022598,
+      "Esc_Recall": 1.0
+    },
+    {
+      "Esc_Th": 0.7,
+      "Top_Th": 0.8,
+      "F1": 0.9178470254957507,
+      "Esc_Recall": 0.9777777777777777
+    },
+    {
+      "Esc_Th": 0.8,
+      "Top_Th": 0.6,
+      "F1": 0.9209039548022598,
+      "Esc_Recall": 1.0
+    },
+    {
+      "Esc_Th": 0.8,
+      "Top_Th": 0.7,
+      "F1": 0.9209039548022598,
+      "Esc_Recall": 1.0
+    },
+    {
+      "Esc_Th": 0.8,
+      "Top_Th": 0.8,
+      "F1": 0.9178470254957507,
+      "Esc_Recall": 0.9777777777777777
+    },
+    {
+      "Esc_Th": 0.9,
+      "Top_Th": 0.6,
+      "F1": 0.9209039548022598,
+      "Esc_Recall": 1.0
+    },
+    {
+      "Esc_Th": 0.9,
+      "Top_Th": 0.7,
+      "F1": 0.9209039548022598,
+      "Esc_Recall": 1.0
+    },
+    {
+      "Esc_Th": 0.9,
+      "Top_Th": 0.8,
+      "F1": 0.9178470254957507,
+      "Esc_Recall": 0.9777777777777777
+    }
+  ]
+}

@@ -33,34 +33,31 @@ def get_deberta_score(text: str) -> float:
         return 0.0
         
     try:
-        # Get scores for all classes
-        results = classifier(text, truncation=True, max_length=512)
+        # top_k=None returns scores for ALL classes, not just top-1.
+        # This ensures we never silently return 0.0 when INJECTION is runner-up.
+        results = classifier(text, truncation=True, max_length=512, top_k=None)
         
-        # Log the raw output if it feels stuck at 0
         logger.debug(f"DeBERTa raw results: {results}")
 
-        # The pipeline typically returns a list of dicts for single input
-        # results: [{'label': 'INJECTION', 'score': 0.99}]
+        # results is a list of lists when top_k=None: [[{'label':..,'score':..}, ...]]
+        # Flatten if nested
+        if results and isinstance(results[0], list):
+            results = results[0]
+
         if not results:
             return 0.0
-            
-        # Case-insensitive check for label containing "INJECTION"
-        # Also handle standard binary labels like "LABEL_1" which is often used for injection in this model
+
+        # Directly find the INJECTION class score by label name
         for r in results:
             label = str(r.get('label', '')).upper()
             score = float(r.get('score', 0.0))
-            
             if "INJECTION" in label or label == "LABEL_1":
                 return round(score, 4)
-                
-        # If we reach here and it's a binary classifier but we didn't find "INJECTION",
-        # and the label is anything other than "SAFE" or "LABEL_0", it might be the target.
-        # But safest is to return the score of the highest probability label if it's not "SAFE"
-        top_result = results[0]
-        if "SAFE" not in str(top_result.get('label', '')).upper() and "LABEL_0" not in str(top_result.get('label', '')).upper():
-            return round(float(top_result.get('score', 0.0)), 4)
 
+        # Fallback: return 0.0 if INJECTION label not found at all
         return 0.0
+
     except Exception as e:
         logger.error(f"Error during DeBERTa inference: {e}")
         return 0.0
+

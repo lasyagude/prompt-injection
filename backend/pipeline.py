@@ -1,4 +1,5 @@
 import time
+from concurrent.futures import ThreadPoolExecutor
 from models.minilm_model import get_embedding
 from models.deberta_model import get_deberta_score
 from models.llm_model import generate_response
@@ -9,19 +10,28 @@ from behavioral.features import (
     role_shift_counter,
     conversation_trajectory,
     repetition_similarity,
-    flag_rate
+    flag_rate,
+    escalation_rate
 )
 from behavioral.risk import compute_risk
 
 def run_pipeline(session_id: str, text: str) -> dict:
     start_time = time.time()
     
-    embedding = get_embedding(text)
-    deberta_score = get_deberta_score(text)
+    # H5: Input Validation - prevent excessive lengths from causing OOM or silent truncation
+    if len(text) > 2000:
+        text = text[:2000]
     
-    history = get_history(session_id)
+    # H1: Parallelize MiniLM and DeBERTa inference for lower latency
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        future_emb = executor.submit(get_embedding, text)
+        future_deb = executor.submit(get_deberta_score, text)
+        
+        embedding = future_emb.result()
+        deberta_score = future_deb.result()
     
-    # Compute features
+    history = get_history(session_id, include_embeddings=True)
+    
     features = {
         "attack_pattern_similarity": attack_pattern_similarity(embedding),
         "probing_similarity": probing_similarity(embedding),
@@ -30,10 +40,10 @@ def run_pipeline(session_id: str, text: str) -> dict:
         "repetition_similarity": repetition_similarity(embedding, history),
         "flag_rate": flag_rate(history)
     }
-    features["escalation_rate"] = 0.0  # Optional fallback if derived externally
-    
+
     prev_risk = get_prev_risk(session_id)
     history_risks = [item.get("risk_score", 0.0) for item in history]
+    features["escalation_rate"] = escalation_rate(history_risks)
     
     risk_score, decision = compute_risk(
         deberta_score=deberta_score,
@@ -43,6 +53,7 @@ def run_pipeline(session_id: str, text: str) -> dict:
         probing=features["probing_similarity"],
         repetition=features["repetition_similarity"],
         flag_rate=features["flag_rate"],
+        escalation=features["escalation_rate"],
         prev_risk=prev_risk,
         history_risks=history_risks
     )
