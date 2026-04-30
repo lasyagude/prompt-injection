@@ -1,14 +1,15 @@
 import React from 'react';
+import { AlertTriangle, Ban, CheckCircle2, ShieldAlert, UserRound } from 'lucide-react';
 
 const Badge = ({ decision }) => {
   if (decision === "ALLOW") {
-    return <div className="text-xs text-text-muted mt-1 flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-allow"></span>ALLOW</div>;
+    return <div className="mt-2 flex items-center gap-1.5 text-xs text-allow"><CheckCircle2 size={13} />ALLOW</div>;
   }
   if (decision === "WARN") {
-    return <div className="text-xs text-text-muted mt-1 flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-warn"></span>WARN — flagged as suspicious</div>;
+    return <div className="mt-2 flex items-center gap-1.5 text-xs text-warn"><AlertTriangle size={13} />WARN - flagged as suspicious</div>;
   }
   if (decision === "BLOCK") {
-    return <div className="text-xs text-text-muted mt-1 flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-block"></span>BLOCK — message intercepted</div>;
+    return <div className="mt-2 flex items-center gap-1.5 text-xs text-block"><Ban size={13} />BLOCK - message intercepted</div>;
   }
   return null;
 };
@@ -16,8 +17,12 @@ const Badge = ({ decision }) => {
 export default function MessageBubble({ role, text, result }) {
   if (role === "user") {
     return (
-      <div className="flex flex-col items-end my-2">
-        <div className="bg-user-bubble px-4 py-2 rounded max-w-[80%] border border-panel-border whitespace-pre-wrap">
+      <div className="my-3 flex flex-col items-end">
+        <div className="mb-1 flex items-center gap-1.5 text-xs text-text-muted">
+          <span>User</span>
+          <UserRound size={13} />
+        </div>
+        <div className="max-w-[58%] rounded-2xl rounded-tr-md border border-accent/20 bg-user-bubble px-4 py-3 text-sm leading-6 text-text-primary shadow-lg shadow-black/10 whitespace-pre-wrap">
           {text}
         </div>
         {result && <Badge decision={result.decision} />}
@@ -27,20 +32,25 @@ export default function MessageBubble({ role, text, result }) {
 
   if (result?.decision === "BLOCK") {
     return (
-      <div className="flex flex-col items-start my-2">
-        <div className="bg-bot-bubble px-4 py-2 rounded max-w-[80%] border border-block text-block flex items-center gap-2">
-          <span>🚫</span> Message Blocked — This message was intercepted by the detection system.
+      <div className="my-3 flex flex-col items-start">
+        <div className="max-w-[78%] rounded-2xl rounded-tl-md border border-block/35 bg-block/10 px-4 py-3 text-sm leading-6 text-block shadow-lg shadow-black/10">
+          <div className="flex items-center gap-2 font-semibold">
+            <Ban size={16} />
+            Message blocked
+          </div>
+          <div className="mt-1 text-block/85">This message was intercepted by the detection system.</div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col items-start my-2">
-      <div className="bg-bot-bubble px-4 py-2 rounded max-w-[80%] border border-panel-border whitespace-pre-wrap flex flex-col gap-2">
+    <div className="my-3 flex flex-col items-start">
+      <div className="max-w-[78%] rounded-2xl rounded-tl-md border border-panel-border bg-bot-bubble px-4 py-3 text-sm leading-6 text-text-primary shadow-lg shadow-black/10 whitespace-pre-wrap">
         {result?.decision === "WARN" && (
-          <div className="text-xs text-warn flex items-center gap-1 bg-warn/10 p-1 rounded">
-            <span>⚠</span> Warning: suspicious content detected
+          <div className="mb-2 flex items-center gap-1.5 rounded-md border border-warn/20 bg-warn/10 px-2 py-1 text-xs text-warn">
+            <ShieldAlert size={13} />
+            Suspicious content detected
           </div>
         )}
         <div>{result?.llm_response || text}</div>

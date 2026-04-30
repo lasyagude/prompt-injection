@@ -4,6 +4,38 @@
 
 @layer base {
   body {
-    @apply bg-terminal-bg text-text-primary font-mono m-0 h-screen w-screen overflow-hidden;
+    @apply bg-terminal-bg text-text-primary font-sans m-0 h-screen w-screen overflow-hidden;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  ::selection {
+    background: rgba(56, 216, 198, 0.28);
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #586575 #080b10;
+  }
+
+  *::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: #080b10;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background: #273447;
+    border: 2px solid #080b10;
+    border-radius: 999px;
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background: #586575;
   }
 }

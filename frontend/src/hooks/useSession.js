@@ -7,13 +7,18 @@ export function useSession() {
   const [currentResult, setCurrentResult] = useState(null);
   const [stats, setStats] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const sendMessage = async (text) => {
     setIsLoading(true);
+    setError("");
     setMessages((prev) => [...prev, { role: "user", text }]);
     
     try {
       const result = await api.sendMessage(sessionId, text);
+      if (!result || result.detail) {
+        throw new Error(result?.detail || "The detector API returned an unexpected response.");
+      }
       
       setMessages((prev) => {
         const newMsgs = [...prev];
@@ -29,6 +34,7 @@ export function useSession() {
       setStats(newStats);
     } catch (error) {
       console.error("Failed to send message:", error);
+      setError(error.message || "Unable to reach the detection API.");
     } finally {
       setIsLoading(false);
     }
@@ -44,7 +50,8 @@ export function useSession() {
     setMessages([]);
     setCurrentResult(null);
     setStats(null);
+    setError("");
   };
 
-  return { messages, currentResult, stats, isLoading, sendMessage, resetSession };
+  return { messages, currentResult, stats, isLoading, error, sendMessage, resetSession };
 }
