@@ -61,3 +61,7 @@ async def stats_endpoint(session_id: str):
 async def delete_session(session_id: str):
     clear_session(session_id)
     return {"ok": True}
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
