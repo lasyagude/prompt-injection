@@ -263,42 +263,7 @@ Edit `backend/config.py` to customize:
 
 ---
 
-## 🤝 Contributing
 
-We welcome contributions! Areas of interest:
-- Additional attack pattern datasets
-- New behavioral features
-- Model improvements
-- Performance optimizations
-- Frontend enhancements
 
----
 
-## 📝 License
 
-This project is licensed under the MIT License - see LICENSE file for details.
-
----
-
-## 👤 Author
-
-**Lasya Gude**  
-AI/ML Engineer | Security Systems
-
----
-
-## 📞 Support & Contact
-
-For questions, issues, or collaboration opportunities:
-- **GitHub**: https://github.com/lasyagude/prompt-injection
-- **Issues**: Report via GitHub Issues
-
----
-
-<div align="center">
-
-**🛡️ Protecting AI Applications from Prompt Injection Attacks 🛡️**
-
-<sub>Built with ❤️ for security-conscious AI teams</sub>
-
-</div>
